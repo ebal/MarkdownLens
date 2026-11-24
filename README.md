@@ -33,6 +33,21 @@ offline.
 4. Click **Details** on the *Markdown Lens* card and turn on
    **Allow access to file URLs**. Without this, the extension cannot run on `file://` pages.
 
+Chromium may list `browser_specific_settings` as an unrecognized manifest key.
+That key is for Firefox and the warning is harmless.
+
+### Firefox (experimental)
+
+1. Open `about:debugging#/runtime/this-firefox`.
+2. Click **Load Temporary Add-on** and select `manifest.json`.
+3. Firefox removes temporary add-ons on restart. To keep it installed, sign it
+   on [addons.mozilla.org](https://addons.mozilla.org/developers/) (choose
+   *unlisted* for personal use).
+
+> **Note:** In LibreWolf 160 the extension renders Markdown served over
+> `http(s)`, but content scripts did not run on `file://` pages during testing.
+> Local files may not render in Firefox yet.
+
 ## Usage
 
 Open any Markdown file in the browser:

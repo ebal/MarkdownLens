@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Theme toggle button (and `d` key) to switch between Auto, Light and Dark; the choice is remembered.
+- Firefox add-on ID in the manifest, so the extension can be loaded and signed in Firefox (experimental).
 
 ### Changed
 

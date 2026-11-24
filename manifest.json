@@ -3,6 +3,12 @@
   "name": "Markdown Lens",
   "version": "0.1.0",
   "description": "Render local and plain-text Markdown files as HTML, fully offline.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "markdown-lens@ebal",
+      "strict_min_version": "128.0"
+    }
+  },
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
