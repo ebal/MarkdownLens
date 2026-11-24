@@ -1,5 +1,5 @@
 /* Markdown Lens — renders plain-text Markdown pages as HTML. */
-(() => {
+(async () => {
   "use strict";
 
   // Only act on pages the browser shows as plain text (not on real HTML pages
@@ -12,6 +12,18 @@
   const source = pre ? pre.textContent : document.body.innerText;
   if (source == null) return;
   document.documentElement.dataset.mdvRendered = "1";
+
+  // Settings live in the extension's own storage, shared by every page, not in
+  // the page's localStorage, which belongs to the website. Start reading them
+  // now; the page waits for them just before it is replaced.
+  const PREF_KEYS = ["mdv-theme", "mdv-toc"];
+  const prefsLoaded = new Promise((resolve) => {
+    try {
+      chrome.storage.local.get(PREF_KEYS, (result) => resolve(result || {}));
+    } catch (_) {
+      resolve({});
+    }
+  });
 
   // ---- Front matter (YAML/TOML, as used by Hugo/Jekyll) -------------------
   let body = source;
@@ -196,6 +208,7 @@
   }
 
   // ---- Page shell ----------------------------------------------------------
+  const prefs = await prefsLoaded;
   const raw = el("pre", { className: "mdv-raw", textContent: source, hidden: true });
   const toc = el("nav", { className: "mdv-toc" }, [el("div", { className: "mdv-toc-title", textContent: "Contents" }), tocList]);
   const hasToc = tocList.children.length > 1;
@@ -226,15 +239,36 @@
   document.title =
     (fmTitle && fmTitle[1]) || (firstH1 && firstH1.textContent.replace(/^#/, "").trim()) || fileName;
 
-  // TOC visibility is remembered per browser; default: shown on wide screens.
-  const store = (k, v) => {
+  // Versions up to 0.2.3 kept these settings in the page's localStorage: move
+  // them to extension storage once, and remove them from the website's storage.
+  for (const k of PREF_KEYS) {
+    let old = null;
     try {
-      if (v === undefined) return localStorage.getItem(k);
-      localStorage.setItem(k, v);
+      old = localStorage.getItem(k);
+      if (old !== null) localStorage.removeItem(k);
     } catch (_) {
-      return null;
+      /* storage blocked for this page */
+    }
+    if (old !== null && prefs[k] === undefined) {
+      prefs[k] = old;
+      try {
+        chrome.storage.local.set({ [k]: old });
+      } catch (_) {
+        /* keep it for this page only */
+      }
+    }
+  }
+  const store = (k, v) => {
+    if (v === undefined) return prefs[k] ?? null;
+    prefs[k] = v;
+    try {
+      chrome.storage.local.set({ [k]: v });
+    } catch (_) {
+      /* the setting then lasts only for this page */
     }
   };
+
+  // TOC visibility is remembered per browser; default: shown on wide screens.
   const tocPref = store("mdv-toc");
   if (hasToc && (tocPref === "1" || (tocPref === null && innerWidth >= 1100))) {
     document.body.classList.add("mdv-toc-open");

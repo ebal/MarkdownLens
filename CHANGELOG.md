@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- README: a Privacy section on what the extension can access and what remote content (images, media, CSS `url()`) a document can load.
+
+### Changed
+
+- The theme and table-of-contents settings are kept in the extension's own storage instead of each website's `localStorage`, so they now apply on every site. Settings saved by older versions are moved over once and removed from the site. This adds the `storage` permission, which browsers grant without asking.
+
 ## [0.2.3] - 2026-11-24
 
 ### Added
