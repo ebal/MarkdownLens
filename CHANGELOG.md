@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Demo video of Markdown Lens in action at the top of the README.
+- README: a Download section for the release `.zip` (Chromium) and `.xpi` (Firefox, LibreWolf) packages.
+- README: install steps for Firefox and LibreWolf, including the site access permission and opening local `file://` Markdown files.
+- The GitHub release workflow can be run by hand for an existing tag; running it again replaces the attached packages.
+
+### Changed
+
+- README uses this repository's `tests/manual-test.md` as the example file.
+
+### Removed
+
+- Tags and release pages for 0.1.0, 0.2.0 and 0.2.1; 0.2.2 is the earliest release you can download.
+
 ## [0.2.2] - 2026-11-24
 
 ### Added
