@@ -195,13 +195,17 @@ body.mdv-toc-open .mdv-toc { display: block; }
   background: var(--mdv-subtle);
   border-radius: 6px;
 }
+/* !important: the dark highlight.js rules are scoped under :root[...] and
+   would otherwise win on specificity, adding a second padded box. */
 .mdv-body pre > code,
 .mdv-body pre > code.hljs {
-  padding: 0;
+  display: inline;
+  padding: 0 !important;
   font-size: 100%;
-  background: transparent;
+  background: transparent !important;
   border-radius: 0;
   white-space: pre;
+  overflow: visible;
 }
 .mdv-copy {
   position: absolute;
