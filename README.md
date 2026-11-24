@@ -164,7 +164,6 @@ vendor/mermaid/      mermaid ES module and its chunks, loaded by mermaid.html
 icons/               extension icons (icon.svg is the source)
 tools/               release scripts used by the CI workflows
 tests/manual-test.md manual test page covering every feature
-MarkdownLens.mp4     demo video shown at the top of this README
 .gitea/, .github/    release workflows for Gitea and GitHub
 ```
 
