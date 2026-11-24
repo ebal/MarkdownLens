@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Markdown Viewer (offline)",
+  "name": "Markdown Lens",
   "version": "0.1.0",
   "description": "Render local and plain-text Markdown files as HTML, fully offline.",
   "icons": {

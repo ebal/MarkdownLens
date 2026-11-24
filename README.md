@@ -1,6 +1,6 @@
-# Markdown Viewer (offline)
+# Markdown Lens
 
-Markdown Viewer is a Chromium extension (Brave, Chrome, Chromium, Edge) that
+Markdown Lens is a Chromium extension (Brave, Chrome, Chromium, Edge) that
 renders Markdown files as HTML when you open them in the browser, for example
 `file:///home/you/Desktop/self-hosted-home-alarm-with-home-assistant.md`.
 Everything runs locally: the Markdown parser, the HTML sanitizer and the syntax
@@ -30,7 +30,7 @@ offline.
 1. Open `brave://extensions` (or `chrome://extensions`).
 2. Turn on **Developer mode** (top right).
 3. Click **Load unpacked** and select this directory (the one with `manifest.json`).
-4. Click **Details** on the *Markdown Viewer (offline)* card and turn on
+4. Click **Details** on the *Markdown Lens* card and turn on
    **Allow access to file URLs**. Without this, the extension cannot run on `file://` pages.
 
 ## Usage

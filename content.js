@@ -1,4 +1,4 @@
-/* Markdown Viewer (offline) — renders plain-text Markdown pages as HTML. */
+/* Markdown Lens — renders plain-text Markdown pages as HTML. */
 (() => {
   "use strict";
 

@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Theme toggle button (and `d` key) to switch between Auto, Light and Dark; the choice is remembered.
 
+### Changed
+
+- Rename the extension from Markdown Viewer (offline) to Markdown Lens.
+
 ## [0.1.0] - 2026-11-24
 
 ### Added
