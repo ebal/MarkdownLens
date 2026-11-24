@@ -125,6 +125,8 @@ vendor/              bundled third-party libraries (offline)
 vendor/katex/        KaTeX script, stylesheet and fonts
 vendor/mermaid/      mermaid ES module and its chunks, loaded on demand
 icons/               extension icons (icon.svg is the source)
+tools/               release scripts used by the CI workflows
+.gitea/, .github/    release workflows for Gitea and GitHub
 ```
 
 ### Bundled libraries
@@ -154,6 +156,34 @@ accessible resources, because the page loads them from the extension.
 
 Pull requests are welcome. After you change a file, click the reload icon on the
 extension card in `brave://extensions`, then reload the Markdown tab.
+
+### Releases
+
+Every release has a `.zip` (Chromium) and an `.xpi` (Firefox) attached on its
+Gitea and GitHub release page. To make one:
+
+1. Set the new version in `manifest.json` and move the `[Unreleased]` entries in
+   `CHANGELOG.md` into a section for that version.
+2. Commit as `chore(release): X.Y.Z` and tag it:
+
+   ```bash
+   git tag -a vX.Y.Z -m "Markdown Lens X.Y.Z"
+   git push origin main vX.Y.Z
+   git push github main vX.Y.Z
+   ```
+
+The release workflow checks that the tag matches the manifest version, builds
+the packages with `tools/build.sh`, and uses the version's `CHANGELOG.md`
+section as the release notes. To build the packages locally (needs `node` and
+`zip`), run:
+
+```bash
+./tools/build.sh
+```
+
+They are written to `dist/`, which git ignores. If the Gitea job fails with
+HTTP 403, add a personal access token with the `write:repository` scope as the
+repository secret `RELEASE_TOKEN`.
 
 ## License
 

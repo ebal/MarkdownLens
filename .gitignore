@@ -2,3 +2,6 @@
 *.zip
 *.crx
 *.pem
+
+# local release builds (tools/build.sh)
+/dist/
