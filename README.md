@@ -83,6 +83,32 @@ Then, in both browsers, open `about:addons` → **Markdown Lens** →
 **Permissions** and turn on access to websites. Firefox asks for this
 separately for Manifest V3 add-ons; without it, Markdown files stay plain text.
 
+#### Local files (`file://`)
+
+With the add-on installed and its site access turned on, LibreWolf 160 renders
+local Markdown files, for example:
+
+```text
+file:///path/to/MarkdownLens/tests/manual-test.md
+```
+
+Firefox has no separate switch for file URLs like Chromium's **Allow access to
+file URLs**; the site access permission is enough.
+
+If a local file still shows as plain text:
+
+1. Check **Permissions** again, then reload the tab with `Ctrl+Shift+R`. Tabs
+   that were open before you changed the permission keep showing plain text
+   until they are reloaded.
+2. Check that the file name ends in `.md`, `.MD`, `.markdown`, `.mdown`, `.mkd`
+   or `.mkdn`; other names are not handled.
+3. Open the Browser Console (`Ctrl+Shift+J`) and look for errors that mention
+   Markdown Lens or `content.js`.
+
+If Firefox offers to download the file instead of showing it, the extension
+never gets a page to render. Open the file from an `http(s)://` server that
+sends it as `text/plain` instead.
+
 To keep the add-on installed in Firefox release, sign it on
 [addons.mozilla.org](https://addons.mozilla.org/developers/) (choose
 *unlisted* for personal use).
