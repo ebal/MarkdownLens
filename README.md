@@ -198,7 +198,7 @@ tests/manual-test.md manual test page covering every feature
 | Library | Version | License |
 | --- | --- | --- |
 | [marked](https://github.com/markedjs/marked) | 15.0.12 | MIT |
-| [DOMPurify](https://github.com/cure53/DOMPurify) | 3.2.6 | Apache-2.0 / MPL-2.0 |
+| [DOMPurify](https://github.com/cure53/DOMPurify) | 3.5.0 | Apache-2.0 / MPL-2.0 |
 | [highlight.js](https://github.com/highlightjs/highlight.js) | 11.11.1 | BSD-3-Clause |
 | [marked-footnote](https://github.com/bent10/marked-extensions) | 1.4.0 | MIT |
 | [KaTeX](https://github.com/KaTeX/KaTeX) | 0.19.1 | MIT |

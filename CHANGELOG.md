@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Tags and release pages for 0.1.0, 0.2.0 and 0.2.1; 0.2.2 is the earliest release you can download.
 
+### Security
+
+- Update DOMPurify from 3.2.6 to 3.5.0, which fixes published sanitizer bypasses (GHSA-v8jm-5vwx-cfxm, GHSA-v2wj-7wpq-c8vv, GHSA-h8r8-wccr-v5f2).
+
 ## [0.2.2] - 2026-11-24
 
 ### Added
