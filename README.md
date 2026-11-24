@@ -1,11 +1,16 @@
 # Markdown Lens
 
-Markdown Lens is a Chromium extension (Brave, Chrome, Chromium, Edge) that
-renders Markdown files as HTML when you open them in the browser, for example
-`file:///home/you/Desktop/self-hosted-home-alarm-with-home-assistant.md`.
-Everything runs locally: the Markdown parser, the HTML sanitizer, the syntax
-highlighter, KaTeX and the diagram libraries ship inside the extension, so it
-needs no network access and works offline.
+Markdown Lens is a browser extension for Chromium browsers (Brave, Chrome,
+Chromium, Edge) and, experimentally, Firefox and LibreWolf. It renders Markdown
+files as HTML when you open them in the browser, for example this repository's
+[`tests/manual-test.md`](tests/manual-test.md). Everything runs locally: the
+Markdown parser, the HTML sanitizer, the syntax highlighter, KaTeX and the
+diagram libraries ship inside the extension, so it needs no network access and
+works offline.
+
+<video src="MarkdownLens.mp4" controls muted width="100%"></video>
+
+[Watch Markdown Lens in action](MarkdownLens.mp4) (37 s video).
 
 ### Features
 
@@ -29,37 +34,66 @@ needs no network access and works offline.
 
 ### Requirements
 
-- A Chromium-based browser with Manifest V3 support (Brave, Chrome, Chromium, Edge).
+- A Chromium-based browser with Manifest V3 support (Brave, Chrome, Chromium, Edge),
+  or Firefox / LibreWolf 128 or newer.
 
-### Load the unpacked extension
+### Download
+
+Each [release](https://github.com/ebal/MarkdownLens/releases) has two files:
+
+- `markdown-lens-X.Y.Z.zip` for Chromium browsers: unzip it into a folder and
+  load that folder as described below.
+- `markdown-lens-X.Y.Z.xpi` for Firefox and LibreWolf.
+
+You can also clone the repository and load it directly:
+
+```bash
+git clone https://github.com/ebal/MarkdownLens.git
+```
+
+### Chromium browsers (Brave, Chrome, Chromium, Edge)
 
 1. Open `brave://extensions` (or `chrome://extensions`).
 2. Turn on **Developer mode** (top right).
-3. Click **Load unpacked** and select this directory (the one with `manifest.json`).
+3. Click **Load unpacked** and select the folder that contains `manifest.json`.
 4. Click **Details** on the *Markdown Lens* card and turn on
    **Allow access to file URLs**. Without this, the extension cannot run on `file://` pages.
 
 Chromium may list `browser_specific_settings` as an unrecognized manifest key.
 That key is for Firefox and the warning is harmless.
 
-### Firefox (experimental)
+### Firefox and LibreWolf (experimental)
+
+The `.xpi` is not signed by Mozilla yet, so how you install it depends on the
+browser.
+
+**LibreWolf** (and Firefox Developer Edition, Nightly or ESR):
+
+1. Open `about:config` and set `xpinstall.signatures.required` to `false`.
+2. Open `about:addons`, click the gear icon, choose **Install Add-on From File…**
+   and select the `.xpi`.
+
+**Firefox** (release): load it as a temporary add-on, which Firefox removes on
+restart.
 
 1. Open `about:debugging#/runtime/this-firefox`.
-2. Click **Load Temporary Add-on** and select `manifest.json`.
-3. Firefox removes temporary add-ons on restart. To keep it installed, sign it
-   on [addons.mozilla.org](https://addons.mozilla.org/developers/) (choose
-   *unlisted* for personal use).
+2. Click **Load Temporary Add-on** and select the `.xpi` or `manifest.json`.
 
-> **Note:** In LibreWolf 160 the extension renders Markdown served over
-> `http(s)`, but content scripts did not run on `file://` pages during testing.
-> Local files may not render in Firefox yet.
+Then, in both browsers, open `about:addons` → **Markdown Lens** →
+**Permissions** and turn on access to websites. Firefox asks for this
+separately for Manifest V3 add-ons; without it, Markdown files stay plain text.
+
+To keep the add-on installed in Firefox release, sign it on
+[addons.mozilla.org](https://addons.mozilla.org/developers/) (choose
+*unlisted* for personal use).
 
 ## Usage
 
-Open any Markdown file in the browser:
+Open any Markdown file in the browser, for example the test page in this
+repository:
 
 ```text
-file:///home/you/Desktop/self-hosted-home-alarm-with-home-assistant.md
+file:///path/to/MarkdownLens/tests/manual-test.md
 ```
 
 Instead of plain text you get a rendered page. Use the buttons in the top right
@@ -113,8 +147,8 @@ dollar sign.
 
 Mermaid is about 5 MB, so it is loaded only on pages that contain a mermaid
 block. It runs in a hidden extension page (`mermaid.html`) inside the Markdown
-page, because Firefox's content-script sandbox breaks it. If a diagram has a syntax error, the error and the source are shown
-instead.
+page, because Firefox's content-script sandbox breaks it. If a diagram has a
+syntax error, the error and the source are shown instead.
 
 ## Project layout
 
@@ -129,6 +163,8 @@ vendor/katex/        KaTeX script, stylesheet and fonts
 vendor/mermaid/      mermaid ES module and its chunks, loaded by mermaid.html
 icons/               extension icons (icon.svg is the source)
 tools/               release scripts used by the CI workflows
+tests/manual-test.md manual test page covering every feature
+MarkdownLens.mp4     demo video shown at the top of this README
 .gitea/, .github/    release workflows for Gitea and GitHub
 ```
 
