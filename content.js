@@ -23,8 +23,47 @@
   }
   const fmTitle = frontMatter && frontMatter.match(/^title\s*[:=]\s*["']?(.+?)["']?\s*$/m);
 
+  // ---- Math: $inline$, $`inline`$ (GitHub), $$display$$ --------------------
+  // The parser only emits placeholders holding the TeX source; KaTeX renders
+  // them after sanitizing, so its output never passes through DOMPurify.
+  const escapeHtml = (s) =>
+    s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const mathHtml = (tex, display) =>
+    display
+      ? `<div class="mdv-math" data-display="1">${escapeHtml(tex)}</div>\n`
+      : `<span class="mdv-math">${escapeHtml(tex)}</span>`;
+  const mathExtension = {
+    extensions: [
+      {
+        name: "mathBlock",
+        level: "block",
+        start: (src) => src.match(/^ {0,3}\$\$/m)?.index,
+        tokenizer(src) {
+          const m = src.match(/^ {0,3}\$\$([\s\S]+?)\$\$[ \t]*(?:\n+|$)/);
+          if (m) return { type: "mathBlock", raw: m[0], text: m[1].trim() };
+        },
+        renderer: (t) => mathHtml(t.text, true),
+      },
+      {
+        name: "mathInline",
+        level: "inline",
+        start: (src) => src.indexOf("$"),
+        tokenizer(src) {
+          const m =
+            src.match(/^\$`([^`]+)`\$/) ||
+            src.match(/^\$\$((?:\\.|[^\\$])+?)\$\$/) ||
+            src.match(/^\$(?![\s$])((?:\\.|[^\\$\n])+?)(?<!\s)\$(?!\d)/);
+          if (m) return { type: "mathInline", raw: m[0], text: m[1], display: m[0].startsWith("$$") };
+        },
+        renderer: (t) => mathHtml(t.text, t.display),
+      },
+    ],
+  };
+
   // ---- Render --------------------------------------------------------------
   marked.setOptions({ gfm: true, breaks: false });
+  marked.use(mathExtension);
+  if (typeof markedFootnote === "function") marked.use(markedFootnote());
   const html = DOMPurify.sanitize(marked.parse(body), {
     ADD_ATTR: ["target"],
   });
@@ -67,7 +106,7 @@
     h.id = id;
     h.prepend(el("a", { className: "mdv-anchor", href: `#${id}`, textContent: "#", ariaHidden: "true" }));
     const level = Number(h.tagName[1]);
-    if (level <= 4) {
+    if (level <= 4 && !h.classList.contains("sr-only")) {
       const text = h.textContent.replace(/^#/, "");
       tocList.append(
         el("li", { className: `mdv-toc-l${level}` }, el("a", { href: `#${id}`, textContent: text }))
@@ -75,11 +114,51 @@
     }
   }
 
-  // ---- Code: syntax highlighting + copy button ----------------------------
+  // ---- GitHub alerts: > [!NOTE], [!TIP], [!IMPORTANT], [!WARNING], [!CAUTION]
+  const ALERTS = { note: "Note", tip: "Tip", important: "Important", warning: "Warning", caution: "Caution" };
+  for (const bq of article.querySelectorAll("blockquote")) {
+    const p = bq.firstElementChild;
+    const first = p && p.tagName === "P" ? p.firstChild : null;
+    const m = first && first.nodeType === Node.TEXT_NODE && first.data.match(/^\s*\[!(\w+)\][ \t]*\n?/);
+    const kind = m && m[1].toLowerCase();
+    if (!kind || !ALERTS[kind]) continue;
+    first.data = first.data.slice(m[0].length);
+    if (p.firstChild && p.firstChild.nodeName === "BR") p.firstChild.remove();
+    if (!p.textContent.trim() && !p.querySelector("img")) p.remove();
+    bq.classList.add("mdv-alert", `mdv-alert-${kind}`);
+    bq.prepend(el("p", { className: "mdv-alert-title", textContent: ALERTS[kind] }));
+  }
+
+  // ---- Code: diagrams, math, syntax highlighting + copy button ------------
+  // Fenced blocks with these languages become diagrams instead of code.
+  const DIAGRAMS = { mermaid: "mermaid", flow: "flowchart", flowchart: "flowchart", sequence: "sequence" };
+  const diagrams = [];
   for (const code of article.querySelectorAll("pre > code")) {
-    const lang = (code.className.match(/language-([\w+-]+)/) || [])[1];
+    const lang = ((code.className.match(/language-([\w+-]+)/) || [])[1] || "").toLowerCase();
+    const pre = code.parentElement;
+    if (DIAGRAMS[lang]) {
+      const box = el("div", { className: `mdv-diagram mdv-${DIAGRAMS[lang]}` });
+      diagrams.push({ kind: DIAGRAMS[lang], box, src: code.textContent });
+      pre.replaceWith(box);
+      continue;
+    }
+    if (lang === "math" || lang === "latex" || lang === "katex") {
+      const box = el("div", { className: "mdv-math", textContent: code.textContent });
+      box.dataset.display = "1";
+      pre.replaceWith(box);
+      continue;
+    }
+    // PlantUML needs Java, which a browser cannot run offline: keep the
+    // source, labelled, without guessing a highlighting language.
+    const noHighlight = lang === "plantuml" || lang === "puml";
+    if (noHighlight) {
+      pre.classList.add("mdv-plantuml");
+      pre.dataset.label = "PlantUML";
+    }
     try {
-      if (lang && hljs.getLanguage(lang)) {
+      if (noHighlight) {
+        /* plain source */
+      } else if (lang && hljs.getLanguage(lang)) {
         code.innerHTML = hljs.highlight(code.textContent, { language: lang }).value;
       } else {
         code.innerHTML = hljs.highlightAuto(code.textContent).value;
@@ -168,10 +247,80 @@
   };
   let theme = THEMES.includes(store("mdv-theme")) ? store("mdv-theme") : "auto";
   applyTheme(theme);
+
+  // ---- Math (KaTeX) ---------------------------------------------------------
+  const mathEls = article.querySelectorAll(".mdv-math");
+  if (mathEls.length) {
+    // Loaded as a <link> so the stylesheet's relative font URLs resolve
+    // inside the extension.
+    head.append(el("link", { rel: "stylesheet", href: chrome.runtime.getURL("vendor/katex/katex.min.css") }));
+    for (const m of mathEls) {
+      const tex = m.textContent;
+      try {
+        katex.render(tex, m, { displayMode: m.dataset.display === "1", throwOnError: false });
+      } catch (err) {
+        m.textContent = tex;
+        m.classList.add("mdv-error");
+        m.title = String(err.message || err);
+      }
+    }
+  }
+
+  // ---- Diagrams -------------------------------------------------------------
+  const isDark = () =>
+    theme === "dark" || (theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+  const showError = (d, err) => {
+    d.box.replaceChildren(
+      el("div", { className: "mdv-diagram-error", textContent: `${d.kind} diagram error: ${err.message || err}` }),
+      el("pre", { textContent: d.src })
+    );
+  };
+  // flowchart.js and js-sequence-diagrams draw with Raphael; they need the
+  // element in the document to measure text, so run after the page shell.
+  for (const d of diagrams) {
+    if (d.kind === "mermaid") continue;
+    try {
+      if (d.kind === "flowchart") flowchart.parse(d.src).drawSVG(d.box);
+      else Diagram.parse(d.src).drawSVG(d.box, { theme: "simple" });
+    } catch (err) {
+      showError(d, err);
+    }
+  }
+  // Mermaid is large (~5 MB), so it is only loaded when a page uses it.
+  const mermaidDiagrams = diagrams.filter((d) => d.kind === "mermaid");
+  let mermaidLib = null;
+  let mermaidRun = 0;
+  const renderMermaid = async () => {
+    if (!mermaidDiagrams.length) return;
+    const run = ++mermaidRun;
+    try {
+      mermaidLib ||= (await import(chrome.runtime.getURL("vendor/mermaid/mermaid.esm.min.mjs"))).default;
+    } catch (err) {
+      for (const d of mermaidDiagrams) showError(d, err);
+      return;
+    }
+    mermaidLib.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
+    for (const [i, d] of mermaidDiagrams.entries()) {
+      if (run !== mermaidRun) return; // the theme changed again; a newer run takes over
+      try {
+        const { svg } = await mermaidLib.render(`mdv-mermaid-${run}-${i}`, d.src);
+        d.box.innerHTML = svg;
+      } catch (err) {
+        showError(d, err);
+      }
+    }
+  };
+  renderMermaid();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (theme === "auto") renderMermaid();
+  });
+
   const cycleTheme = () => {
+    const wasDark = isDark();
     theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
     store("mdv-theme", theme);
     applyTheme(theme);
+    if (isDark() !== wasDark) renderMermaid();
   };
 
   btnToc.addEventListener("click", toggleToc);

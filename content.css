@@ -223,6 +223,69 @@ body.mdv-toc-open .mdv-toc { display: block; }
   border-radius: 6px;
 }
 
+/* GitHub alerts */
+.mdv-body .mdv-alert { color: inherit; border-left-color: var(--mdv-alert); }
+.mdv-alert-title { margin-bottom: 4px !important; font-weight: 600; color: var(--mdv-alert); }
+.mdv-alert-note { --mdv-alert: #0969da; }
+.mdv-alert-tip { --mdv-alert: #1a7f37; }
+.mdv-alert-important { --mdv-alert: #8250df; }
+.mdv-alert-warning { --mdv-alert: #9a6700; }
+.mdv-alert-caution { --mdv-alert: #d1242f; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mdv-theme="light"]) .mdv-alert-note { --mdv-alert: #4493f8; }
+  :root:not([data-mdv-theme="light"]) .mdv-alert-tip { --mdv-alert: #3fb950; }
+  :root:not([data-mdv-theme="light"]) .mdv-alert-important { --mdv-alert: #ab7df8; }
+  :root:not([data-mdv-theme="light"]) .mdv-alert-warning { --mdv-alert: #d29922; }
+  :root:not([data-mdv-theme="light"]) .mdv-alert-caution { --mdv-alert: #f85149; }
+}
+:root[data-mdv-theme="dark"] .mdv-alert-note { --mdv-alert: #4493f8; }
+:root[data-mdv-theme="dark"] .mdv-alert-tip { --mdv-alert: #3fb950; }
+:root[data-mdv-theme="dark"] .mdv-alert-important { --mdv-alert: #ab7df8; }
+:root[data-mdv-theme="dark"] .mdv-alert-warning { --mdv-alert: #d29922; }
+:root[data-mdv-theme="dark"] .mdv-alert-caution { --mdv-alert: #f85149; }
+
+/* Footnotes */
+.mdv-body .footnotes {
+  margin-top: 32px;
+  padding-top: 8px;
+  font-size: 85%;
+  color: var(--mdv-muted);
+  border-top: 1px solid var(--mdv-border);
+}
+.mdv-body .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Math */
+.mdv-body div.mdv-math { margin: 0 0 16px; overflow-x: auto; overflow-y: hidden; }
+.mdv-body .mdv-math.mdv-error { color: #d1242f; font-family: ui-monospace, monospace; white-space: pre-wrap; }
+
+/* Diagrams. flowchart.js and sequence diagrams draw black on transparent,
+   so they keep a light card in dark mode; mermaid follows the theme. */
+.mdv-diagram { margin: 0 0 16px; overflow-x: auto; text-align: center; }
+.mdv-mermaid svg { max-width: 100%; height: auto; }
+.mdv-flowchart, .mdv-sequence {
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid var(--mdv-border);
+  border-radius: 6px;
+}
+.mdv-diagram-error { margin-bottom: 8px; color: #d1242f; font-size: 13px; text-align: left; }
+.mdv-diagram pre { text-align: left; }
+.mdv-plantuml::before {
+  content: attr(data-label);
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mdv-muted);
+}
+
 @media print {
   .mdv-toolbar, .mdv-toc, .mdv-copy { display: none !important; }
   body.mdv-toc-open .mdv-main { margin-left: auto; }

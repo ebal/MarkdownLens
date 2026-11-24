@@ -28,12 +28,35 @@
       ],
       "js": [
         "vendor/marked.min.js",
+        "vendor/marked-footnote.min.js",
         "vendor/purify.min.js",
         "vendor/highlight.min.js",
+        "vendor/katex/katex.min.js",
+        "vendor/raphael.min.js",
+        "vendor/underscore.min.js",
+        "vendor/flowchart.min.js",
+        "vendor/sequence-diagram.min.js",
         "content.js"
       ],
-      "css": ["vendor/hljs-theme.css", "content.css"],
+      "css": [
+        "vendor/hljs-theme.css",
+        "content.css"
+      ],
       "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "vendor/katex/katex.min.css",
+        "vendor/katex/fonts/*",
+        "vendor/mermaid/mermaid.esm.min.mjs",
+        "vendor/mermaid/chunks/mermaid.esm.min/*"
+      ],
+      "matches": [
+        "file:///*",
+        "*://*/*"
+      ]
     }
   ]
 }

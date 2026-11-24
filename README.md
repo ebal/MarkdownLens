@@ -3,14 +3,20 @@
 Markdown Lens is a Chromium extension (Brave, Chrome, Chromium, Edge) that
 renders Markdown files as HTML when you open them in the browser, for example
 `file:///home/you/Desktop/self-hosted-home-alarm-with-home-assistant.md`.
-Everything runs locally: the Markdown parser, the HTML sanitizer and the syntax
-highlighter ship inside the extension, so it needs no network access and works
-offline.
+Everything runs locally: the Markdown parser, the HTML sanitizer, the syntax
+highlighter, KaTeX and the diagram libraries ship inside the extension, so it
+needs no network access and works offline.
 
 ### Features
 
-- GitHub Flavored Markdown: tables, task lists, strikethrough, autolinks, fenced code.
+- GitHub Flavored Markdown: tables, task lists, strikethrough, autolinks, fenced code,
+  footnotes and alerts (`> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`).
+- Math with [KaTeX](https://katex.org/): `$inline$`, `` $`inline`$ ``, `$$display$$` and ` ```math ` blocks.
 - Syntax highlighting for code blocks, with a **Copy** button on each block.
+- Diagrams from fenced code blocks: ` ```mermaid `, ` ```flow ` (flowchart.js) and
+  ` ```sequence ` (js-sequence-diagrams). Mermaid follows the light/dark theme.
+- ` ```plantuml ` blocks are shown as labelled source. PlantUML needs Java or a
+  server, and Markdown Lens never sends your files anywhere.
 - Light and dark theme: follows your system setting by default, or pick one with the theme button (`d`).
 - Table of contents sidebar built from the headings (`t` toggles it).
 - Raw Markdown view (`r` toggles between rendered and raw).
@@ -74,6 +80,41 @@ that are already HTML are left alone.
 
 To see a file change, reload the tab (`F5`).
 
+### Math and diagrams
+
+````markdown
+Euler: $e^{i\pi} + 1 = 0$
+
+$$
+\int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}
+$$
+
+```mermaid
+graph LR
+  A[Start] --> B{OK?} -->|yes| C[Done]
+```
+
+```flow
+st=>start: Start
+op=>operation: Work
+e=>end: End
+st->op->e
+```
+
+```sequence
+Alice->Bob: Hello Bob
+Bob-->Alice: Fine
+```
+````
+
+A `$` followed by a space or a closing `$` followed by a digit is left as text,
+so prices such as `$5 and $10` are not treated as math. Write `\$` for a literal
+dollar sign.
+
+Mermaid is about 5 MB, so it is loaded only on pages that contain a mermaid
+block. If a diagram has a syntax error, the error and the source are shown
+instead.
+
 ## Project layout
 
 ```text
@@ -81,6 +122,8 @@ manifest.json        extension manifest (the version lives here)
 content.js           detects plain-text Markdown and renders it
 content.css          page styling, light and dark
 vendor/              bundled third-party libraries (offline)
+vendor/katex/        KaTeX script, stylesheet and fonts
+vendor/mermaid/      mermaid ES module and its chunks, loaded on demand
 icons/               extension icons (icon.svg is the source)
 ```
 
@@ -91,9 +134,21 @@ icons/               extension icons (icon.svg is the source)
 | [marked](https://github.com/markedjs/marked) | 15.0.12 | MIT |
 | [DOMPurify](https://github.com/cure53/DOMPurify) | 3.2.6 | Apache-2.0 / MPL-2.0 |
 | [highlight.js](https://github.com/highlightjs/highlight.js) | 11.11.1 | BSD-3-Clause |
+| [marked-footnote](https://github.com/bent10/marked-extensions) | 1.4.0 | MIT |
+| [KaTeX](https://github.com/KaTeX/KaTeX) | 0.19.1 | MIT |
+| [mermaid](https://github.com/mermaid-js/mermaid) | 12.3.0 | MIT |
+| [flowchart.js](https://github.com/adrai/flowchart.js) | 1.17.1 | MIT |
+| [js-sequence-diagrams](https://github.com/bramp/js-sequence-diagrams) | 2.0.1 | BSD-2-Clause |
+| [Raphaël](https://github.com/DmitryBaranovskiy/raphael) | 2.3.0 | MIT |
+| [Underscore.js](https://github.com/jashkenas/underscore) | 1.13.8 | MIT |
 
 To update a library, replace the file in `vendor/` and reload the extension on
-the extensions page.
+the extensions page. For mermaid, replace `vendor/mermaid/` with
+`dist/mermaid.esm.min.mjs` and `dist/chunks/mermaid.esm.min/` from the npm
+package. flowchart.js 1.18 ships no prebuilt bundle on npm, so 1.17.1 is used.
+
+The KaTeX stylesheet and fonts and the mermaid modules are listed as web
+accessible resources, because the page loads them from the extension.
 
 ## Contributing
 
