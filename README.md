@@ -1,7 +1,8 @@
 # Markdown Lens
 
 Markdown Lens is a browser extension for Chromium browsers (Brave, Chrome,
-Chromium, Edge) and, experimentally, Firefox and LibreWolf. It renders Markdown
+Chromium, Edge) and Firefox / LibreWolf
+([addons.mozilla.org](https://addons.mozilla.org/firefox/addon/markdown-lens/)). It renders Markdown
 files as HTML when you open them in the browser, for example this repository's
 [`tests/manual-test.md`](tests/manual-test.md). Everything runs locally: the
 Markdown parser, the HTML sanitizer, the syntax highlighter, KaTeX and the
@@ -46,7 +47,7 @@ Each [release](https://github.com/ebal/MarkdownLens/releases) has two files:
   load that folder as described below.
 - `markdown-lens-X.Y.Z.xpi` for Firefox and LibreWolf (not signed by Mozilla;
   see below). Firefox users can install the signed add-on from
-  addons.mozilla.org instead.
+  [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/markdown-lens/) instead.
 
 You can also clone the repository and load it directly:
 
@@ -67,11 +68,12 @@ That key is for Firefox and the warning is harmless.
 
 ### Firefox and LibreWolf
 
-**From addons.mozilla.org (recommended):** every release is submitted to
-[addons.mozilla.org](https://addons.mozilla.org/firefox/search/?q=Markdown%20Lens),
-where Mozilla reviews and signs it. Install Markdown Lens from there, and
-Firefox keeps it up to date. A new version shows up there only after Mozilla's
-review, which can take from minutes to a few days.
+**From addons.mozilla.org (recommended):** install
+[Markdown Lens on addons.mozilla.org](https://addons.mozilla.org/firefox/addon/markdown-lens/), and Firefox
+keeps it up to date. Every release is submitted there, where Mozilla reviews
+and signs it; a new version shows up only after that review, which can take
+from minutes to a few days. Until the first version is approved, the page says
+the add-on was not found.
 
 **From the release `.xpi`:** the `.xpi` attached to each Gitea and GitHub
 release is not signed by Mozilla, so how you install it depends on the browser.
@@ -83,7 +85,7 @@ release is not signed by Mozilla, so how you install it depends on the browser.
    and select the `.xpi`.
 
 **Firefox** (release): load it as a temporary add-on, which Firefox removes on
-restart, or install it from addons.mozilla.org instead.
+restart, or install it from [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/markdown-lens/) instead.
 
 1. Open `about:debugging#/runtime/this-firefox`.
 2. Click **Load Temporary Add-on** and select the `.xpi` or `manifest.json`.
