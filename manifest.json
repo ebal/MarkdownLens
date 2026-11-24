@@ -50,8 +50,7 @@
       "resources": [
         "vendor/katex/katex.min.css",
         "vendor/katex/fonts/*",
-        "vendor/mermaid/mermaid.esm.min.mjs",
-        "vendor/mermaid/chunks/mermaid.esm.min/*"
+        "mermaid.html"
       ],
       "matches": [
         "file:///*",

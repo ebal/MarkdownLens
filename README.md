@@ -112,7 +112,8 @@ so prices such as `$5 and $10` are not treated as math. Write `\$` for a literal
 dollar sign.
 
 Mermaid is about 5 MB, so it is loaded only on pages that contain a mermaid
-block. If a diagram has a syntax error, the error and the source are shown
+block. It runs in a hidden extension page (`mermaid.html`) inside the Markdown
+page, because Firefox's content-script sandbox breaks it. If a diagram has a syntax error, the error and the source are shown
 instead.
 
 ## Project layout
@@ -121,9 +122,11 @@ instead.
 manifest.json        extension manifest (the version lives here)
 content.js           detects plain-text Markdown and renders it
 content.css          page styling, light and dark
+mermaid.html         hidden page that renders mermaid diagrams for content.js
+mermaid-frame.js     its script: receives diagram source, returns the SVG
 vendor/              bundled third-party libraries (offline)
 vendor/katex/        KaTeX script, stylesheet and fonts
-vendor/mermaid/      mermaid ES module and its chunks, loaded on demand
+vendor/mermaid/      mermaid ES module and its chunks, loaded by mermaid.html
 icons/               extension icons (icon.svg is the source)
 tools/               release scripts used by the CI workflows
 .gitea/, .github/    release workflows for Gitea and GitHub
@@ -149,13 +152,16 @@ the extensions page. For mermaid, replace `vendor/mermaid/` with
 `dist/mermaid.esm.min.mjs` and `dist/chunks/mermaid.esm.min/` from the npm
 package. flowchart.js 1.18 ships no prebuilt bundle on npm, so 1.17.1 is used.
 
-The KaTeX stylesheet and fonts and the mermaid modules are listed as web
-accessible resources, because the page loads them from the extension.
+The KaTeX stylesheet and fonts and `mermaid.html` are listed as web accessible
+resources, because the Markdown page loads them from the extension.
 
 ## Contributing
 
 Pull requests are welcome. After you change a file, click the reload icon on the
 extension card in `brave://extensions`, then reload the Markdown tab.
+
+Open [`tests/manual-test.md`](tests/manual-test.md) in each browser to check
+every feature by hand; each section says what you should see.
 
 ### Releases
 

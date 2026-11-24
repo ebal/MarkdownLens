@@ -10,7 +10,7 @@ cd "$(dirname "$0")/.." || exit "$E_XCD"
 
 name="markdown-lens"
 version=$(node -p 'require("./manifest.json").version')
-files=(manifest.json content.js content.css icons vendor)
+files=(manifest.json content.js content.css mermaid.html mermaid-frame.js icons vendor)
 
 mkdir -p dist
 rm -f "dist/${name}-${version}.zip" "dist/${name}-${version}.xpi"

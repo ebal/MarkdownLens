@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Manual test page `tests/manual-test.md` that exercises every feature.
+
+### Fixed
+
+- Mermaid diagrams failing in Firefox and LibreWolf with "Syntax error in text" or "call to Function() blocked by CSP"; mermaid now renders in a hidden extension page.
+- Leftover mermaid error graphics at the bottom of the page after a diagram with a syntax error.
+
 ## [0.2.1] - 2026-11-24
 
 ### Added

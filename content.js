@@ -286,25 +286,62 @@
       showError(d, err);
     }
   }
-  // Mermaid is large (~5 MB), so it is only loaded when a page uses it.
+  // Mermaid is large (~5 MB), so it is only loaded when a page uses it. It runs
+  // in a hidden extension page (mermaid.html) instead of this content script:
+  // Firefox runs content scripts in a sandbox where `self.Object !== Object`,
+  // and lodash inside mermaid then fails ("call to Function() blocked by CSP",
+  // "Math.max is not a function"). The frame is an ordinary page in both
+  // browsers; it receives the diagram source and posts back the SVG.
   const mermaidDiagrams = diagrams.filter((d) => d.kind === "mermaid");
-  let mermaidLib = null;
+  const frameUrl = chrome.runtime.getURL("mermaid.html");
+  const frameOrigin = new URL(frameUrl).origin;
+  const pending = new Map();
+  let frame = null;
+  let frameReady = null;
+  let requestId = 0;
+  const mermaidFrame = () =>
+    (frameReady ||= new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error("the mermaid renderer did not load")), 20000);
+      addEventListener("message", (e) => {
+        if (!frame || e.source !== frame.contentWindow || !e.data) return;
+        const { ready, id, svg, error } = e.data;
+        if (ready) {
+          clearTimeout(timer);
+          resolve();
+          return;
+        }
+        const req = pending.get(id);
+        if (!req) return;
+        pending.delete(id);
+        if (error) req.reject(new Error(error));
+        else req.resolve(svg);
+      });
+      // Off screen but not display:none, so mermaid can measure text.
+      frame = el("iframe", { src: frameUrl, title: "mermaid renderer", tabIndex: -1 });
+      frame.setAttribute("aria-hidden", "true");
+      frame.style.cssText =
+        "position:absolute;left:-10000px;top:0;width:1200px;height:900px;border:0;visibility:hidden";
+      document.body.append(frame);
+    }));
+  const renderInFrame = async (src, dark) => {
+    await mermaidFrame();
+    const id = ++requestId;
+    return new Promise((resolve, reject) => {
+      pending.set(id, { resolve, reject });
+      frame.contentWindow.postMessage({ id, src, dark }, frameOrigin);
+    });
+  };
+
   let mermaidRun = 0;
   const renderMermaid = async () => {
     if (!mermaidDiagrams.length) return;
     const run = ++mermaidRun;
-    try {
-      mermaidLib ||= (await import(chrome.runtime.getURL("vendor/mermaid/mermaid.esm.min.mjs"))).default;
-    } catch (err) {
-      for (const d of mermaidDiagrams) showError(d, err);
-      return;
-    }
-    mermaidLib.initialize({ startOnLoad: false, securityLevel: "strict", theme: isDark() ? "dark" : "default" });
-    for (const [i, d] of mermaidDiagrams.entries()) {
+    const dark = isDark();
+    for (const d of mermaidDiagrams) {
       if (run !== mermaidRun) return; // the theme changed again; a newer run takes over
       try {
-        const { svg } = await mermaidLib.render(`mdv-mermaid-${run}-${i}`, d.src);
-        d.box.innerHTML = svg;
+        const svg = await renderInFrame(d.src, dark);
+        if (run === mermaidRun) d.box.innerHTML = svg;
       } catch (err) {
         showError(d, err);
       }
