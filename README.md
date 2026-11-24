@@ -8,9 +8,9 @@ Markdown parser, the HTML sanitizer, the syntax highlighter, KaTeX and the
 diagram libraries ship inside the extension, so it needs no network access and
 works offline.
 
-<video src="MarkdownLens.mp4" controls muted width="100%"></video>
+Watch Markdown Lens in action, 37s video.
 
-[Watch Markdown Lens in action](MarkdownLens.mp4) (37 s video).
+https://github.com/user-attachments/assets/96f5944e-14f9-463b-9d3e-32877c473feb
 
 ### Features
 
