@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-24
+
 ### Added
 
 - Theme toggle button (and `d` key) to switch between Auto, Light and Dark; the choice is remembered.
@@ -31,3 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automatic light and dark theme.
 - Table of contents sidebar and raw Markdown view, with `t` and `r` shortcuts.
 - Heading anchors and front matter handling.
+
+[unreleased]: https://github.com/ebal/MarkdownLens/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ebal/MarkdownLens/compare/d87f2dd...v0.2.0
+[0.1.0]: https://github.com/ebal/MarkdownLens/commit/d87f2dd
