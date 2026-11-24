@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Theme toggle button (and `d` key) to switch between Auto, Light and Dark; the choice is remembered.
+
 ## [0.1.0] - 2026-11-24
 
 ### Added

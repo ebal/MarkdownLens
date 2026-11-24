@@ -117,7 +117,8 @@
 
   const btnToc = el("button", { type: "button", textContent: "Contents", title: "Toggle table of contents (t)" });
   const btnRaw = el("button", { type: "button", textContent: "Raw", title: "Toggle raw Markdown (r)" });
-  const toolbar = el("div", { className: "mdv-toolbar" }, hasToc ? [btnToc, btnRaw] : [btnRaw]);
+  const btnTheme = el("button", { type: "button", className: "mdv-theme" });
+  const toolbar = el("div", { className: "mdv-toolbar" }, [...(hasToc ? [btnToc] : []), btnRaw, btnTheme]);
 
   const main = el("main", { className: "mdv-main" }, [article, raw]);
   document.body.replaceChildren(toolbar, ...(hasToc ? [toc] : []), main);
@@ -156,12 +157,31 @@
     article.hidden = !raw.hidden;
     btnRaw.textContent = raw.hidden ? "Raw" : "Rendered";
   };
+  // Theme: auto (follow the system) -> light -> dark -> auto. Remembered per browser.
+  const THEMES = ["auto", "light", "dark"];
+  const THEME_LABEL = { auto: "◐ Auto", light: "☀ Light", dark: "☾ Dark" };
+  const applyTheme = (theme) => {
+    if (theme === "auto") delete document.documentElement.dataset.mdvTheme;
+    else document.documentElement.dataset.mdvTheme = theme;
+    btnTheme.textContent = THEME_LABEL[theme];
+    btnTheme.title = `Theme: ${theme} — click to change (d)`;
+  };
+  let theme = THEMES.includes(store("mdv-theme")) ? store("mdv-theme") : "auto";
+  applyTheme(theme);
+  const cycleTheme = () => {
+    theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
+    store("mdv-theme", theme);
+    applyTheme(theme);
+  };
+
   btnToc.addEventListener("click", toggleToc);
   btnRaw.addEventListener("click", toggleRaw);
+  btnTheme.addEventListener("click", cycleTheme);
   document.addEventListener("keydown", (e) => {
     if (e.ctrlKey || e.metaKey || e.altKey || /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
     if (e.key === "t") toggleToc();
     if (e.key === "r") toggleRaw();
+    if (e.key === "d") cycleTheme();
   });
 
   // Jump to #fragment now that heading ids exist.

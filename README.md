@@ -11,7 +11,7 @@ offline.
 
 - GitHub Flavored Markdown: tables, task lists, strikethrough, autolinks, fenced code.
 - Syntax highlighting for code blocks, with a **Copy** button on each block.
-- Light and dark theme, following your system setting.
+- Light and dark theme: follows your system setting by default, or pick one with the theme button (`d`).
 - Table of contents sidebar built from the headings (`t` toggles it).
 - Raw Markdown view (`r` toggles between rendered and raw).
 - Heading anchors, so `file.md#some-heading` links work.
@@ -48,6 +48,9 @@ corner, or the keyboard:
 | --- | --- |
 | `t` | Show or hide the table of contents |
 | `r` | Switch between rendered HTML and raw Markdown |
+| `d` | Cycle the theme: Auto (system) → Light → Dark |
+
+The theme you pick is remembered for all Markdown files you open.
 
 The extension handles these extensions: `.md`, `.MD`, `.markdown`, `.mdown`,
 `.mkd`, `.mkdn` on `file://`, and `.md` / `.markdown` on `http(s)://` when the
