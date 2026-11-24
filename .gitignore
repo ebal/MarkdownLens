@@ -1,0 +1,4 @@
+# packaged builds and signing keys
+*.zip
+*.crx
+*.pem
