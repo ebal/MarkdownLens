@@ -64,9 +64,14 @@
   marked.setOptions({ gfm: true, breaks: false });
   marked.use(mathExtension);
   if (typeof markedFootnote === "function") marked.use(markedFootnote());
-  const html = DOMPurify.sanitize(marked.parse(body), {
+  // Form controls are dropped (like GitHub does): a document must not be able
+  // to show a fake login form. Task-list checkboxes are the only <input>s kept.
+  const PURIFY = {
     ADD_ATTR: ["target"],
-  });
+    FORBID_TAGS: ["form", "button", "select", "textarea"],
+    FORBID_ATTR: ["formaction"],
+  };
+  const html = DOMPurify.sanitize(marked.parse(body), PURIFY);
 
   const el = (tag, props = {}, children = []) => {
     const n = document.createElement(tag);
@@ -85,6 +90,7 @@
   }
   const content = el("div");
   content.innerHTML = html;
+  for (const input of content.querySelectorAll('input:not([type="checkbox"])')) input.remove();
   article.append(...content.childNodes);
 
   // ---- Heading anchors + table of contents --------------------------------
@@ -207,7 +213,15 @@
   head.append(el("meta", { name: "color-scheme", content: "light dark" }));
   head.append(el("meta", { name: "viewport", content: "width=device-width, initial-scale=1" }));
 
-  const fileName = decodeURIComponent(location.pathname.split("/").pop() || "");
+  // A malformed %-escape in the URL must not stop the rest of the rendering.
+  const decode = (s) => {
+    try {
+      return decodeURIComponent(s);
+    } catch (_) {
+      return s;
+    }
+  };
+  const fileName = decode(location.pathname.split("/").pop() || "");
   const firstH1 = article.querySelector("h1");
   document.title =
     (fmTitle && fmTitle[1]) || (firstH1 && firstH1.textContent.replace(/^#/, "").trim()) || fileName;
@@ -275,6 +289,18 @@
       el("pre", { textContent: d.src })
     );
   };
+  // Diagram libraries build their SVG after the Markdown was sanitized, and
+  // flowchart.js turns `text:>javascript:…` into a clickable link and
+  // `text:$name` into a click handler. Every diagram goes through DOMPurify
+  // before it is shown; re-parsing the markup also drops those handlers.
+  // Mermaid draws its labels as HTML inside <foreignObject>; DOMPurify only
+  // keeps that HTML (still sanitized) when foreignObject is an integration point.
+  const sanitizeSvg = (markup) =>
+    DOMPurify.sanitize(markup, {
+      ...PURIFY,
+      ADD_TAGS: ["foreignObject"],
+      HTML_INTEGRATION_POINTS: { foreignobject: true },
+    });
   // flowchart.js and js-sequence-diagrams draw with Raphael; they need the
   // element in the document to measure text, so run after the page shell.
   for (const d of diagrams) {
@@ -282,6 +308,7 @@
     try {
       if (d.kind === "flowchart") flowchart.parse(d.src).drawSVG(d.box);
       else Diagram.parse(d.src).drawSVG(d.box, { theme: "simple" });
+      d.box.innerHTML = sanitizeSvg(d.box.innerHTML);
     } catch (err) {
       showError(d, err);
     }
@@ -303,7 +330,7 @@
     (frameReady ||= new Promise((resolve, reject) => {
       const timer = setTimeout(() => reject(new Error("the mermaid renderer did not load")), 20000);
       addEventListener("message", (e) => {
-        if (!frame || e.source !== frame.contentWindow || !e.data) return;
+        if (!frame || e.source !== frame.contentWindow || e.origin !== frameOrigin || !e.data) return;
         const { ready, id, svg, error } = e.data;
         if (ready) {
           clearTimeout(timer);
@@ -341,7 +368,7 @@
       if (run !== mermaidRun) return; // the theme changed again; a newer run takes over
       try {
         const svg = await renderInFrame(d.src, dark);
-        if (run === mermaidRun) d.box.innerHTML = svg;
+        if (run === mermaidRun) d.box.innerHTML = sanitizeSvg(svg);
       } catch (err) {
         showError(d, err);
       }
@@ -372,7 +399,7 @@
 
   // Jump to #fragment now that heading ids exist.
   if (location.hash) {
-    const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    const target = document.getElementById(decode(location.hash.slice(1)));
     if (target) target.scrollIntoView();
   }
 })();

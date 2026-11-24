@@ -338,6 +338,25 @@ broken image must not run its `onerror` handler:
 <img src="does-not-exist.png" onerror="alert('onerror ran: sanitizing is broken')" alt="broken image (expected)">
 <a href="javascript:alert('javascript link ran')">javascript: link (should do nothing)</a>
 
+Form controls are removed, so no fake login form can be shown. Nothing may
+appear between the two lines below: no password field and no **Log in** button.
+
+-----
+
+<form action="https://example.com/collect"><input name="password" type="password" placeholder="password"><button>Log in</button><textarea>notes</textarea></form>
+
+-----
+
+A flowchart node must not become a `javascript:` link. Clicking **Click me**
+must do nothing (no alert):
+
+```flow
+st=>start: Start
+op=>operation: Click me:>javascript:alert('flowchart link ran: sanitizing is broken')
+fn=>operation: Function:$alert
+st->op->fn
+```
+
 ## 12. Miscellaneous
 
 Horizontal rule below:

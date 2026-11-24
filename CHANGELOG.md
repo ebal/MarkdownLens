@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - README uses this repository's `tests/manual-test.md` as the example file.
+- The manual test page also checks that flowchart links and form controls are neutralized.
+
+### Fixed
+
+- A malformed `%` escape in the file name or `#anchor` no longer stops the rendering halfway.
 
 ### Removed
 
@@ -24,7 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+- Fix script injection through flowchart.js diagrams: a node written as `text:>javascript:…` became a link that ran code in the page when clicked. All diagram output (flowchart.js, sequence diagrams, mermaid) is now sanitized with DOMPurify, which also removes flowchart.js `text:$function` click handlers.
 - Update DOMPurify from 3.2.6 to 3.5.0, which fixes published sanitizer bypasses (GHSA-v8jm-5vwx-cfxm, GHSA-v2wj-7wpq-c8vv, GHSA-h8r8-wccr-v5f2).
+- Remove form controls (`<form>`, `<button>`, `<select>`, `<textarea>`, and every `<input>` except task-list checkboxes) from rendered Markdown, so a document cannot show a working fake login form.
+- Accept mermaid results only from the extension's own renderer frame (checks the message origin as well as its source).
 
 ## [0.2.2] - 2026-11-24
 

@@ -28,7 +28,8 @@ https://github.com/user-attachments/assets/96f5944e-14f9-463b-9d3e-32877c473feb
 - Heading anchors, so `file.md#some-heading` links work.
 - YAML/TOML front matter (Hugo, Jekyll) is hidden in a collapsible block, and its `title` becomes the tab title.
 - Relative links and images work, because the page keeps the file's own URL.
-- Raw HTML inside the Markdown is sanitized with [DOMPurify](https://github.com/cure53/DOMPurify) before display.
+- Raw HTML inside the Markdown is sanitized with [DOMPurify](https://github.com/cure53/DOMPurify) before display,
+  and so is every rendered diagram. Form controls are removed, so a document cannot show a fake login form.
 
 ## Installation
 
