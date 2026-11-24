@@ -132,12 +132,14 @@ corner, or the keyboard:
 | `r` | Switch between rendered HTML and raw Markdown |
 | `d` | Cycle the theme: Auto (system) → Light → Dark |
 
-The theme you pick is remembered for all Markdown files you open.
+The theme you pick and whether the table of contents is open are remembered
+for all Markdown files you open, on every site and on local files.
 
 The extension handles these extensions: `.md`, `.MD`, `.markdown`, `.mdown`,
 `.mkd`, `.mkdn` on `file://`, and `.md` / `.markdown` on `http(s)://` when the
 server sends them as plain text (for example raw files from a Git host). Pages
-that are already HTML are left alone.
+that are already HTML are left alone. The URL must end in the extension: a
+query string such as `file.md?raw=1` is not matched.
 
 To see a file change, reload the tab (`F5`).
 
@@ -176,6 +178,39 @@ Mermaid is about 5 MB, so it is loaded only on pages that contain a mermaid
 block. It runs in a hidden extension page (`mermaid.html`) inside the Markdown
 page, because Firefox's content-script sandbox breaks it. If a diagram has a
 syntax error, the error and the source are shown instead.
+
+## Privacy
+
+Markdown Lens itself sends nothing over the network: no analytics and no
+requests. The Markdown parser, KaTeX and the diagram libraries run inside the
+extension.
+
+**What it can access.** The extension runs on URLs that end in `.md` or
+`.markdown` on any website, and on local Markdown files. Browsers treat that as
+access to every site, because site access is granted per host, not per path.
+On a matching page it only does something when the browser shows the file as
+plain text; other pages are left alone. It asks for one browser permission,
+`storage`, to keep two settings: the theme and whether the table of contents is
+open. Nothing else is stored. Versions up to 0.2.3 kept these settings in each
+website's own storage; newer versions move them into the extension and remove
+them from the site.
+
+**What documents can load.** A rendered document is a web page, and like any
+web page it can load remote content when it opens:
+
+- Remote images (`![logo](https://example.com/logo.png)` or `<img>`), and the
+  sources of `<video>` and `<audio>`.
+- `url(…)` inside `style` attributes of raw HTML.
+
+The server that hosts that content sees when, and from which IP address, the
+document was opened. This works even for a local file, so a Markdown file can
+contain a tracking pixel. Links are only followed when you click them.
+
+To read an untrusted file without loading anything, open it with a text editor,
+or turn the extension off before opening it.
+
+Raw HTML, links and diagrams are sanitized with DOMPurify, so scripts in
+documents do not run, and form controls are removed.
 
 ## Project layout
 
