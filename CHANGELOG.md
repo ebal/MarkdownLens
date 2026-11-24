@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Releases are submitted to addons.mozilla.org (listed), where Mozilla reviews and signs them, so Firefox users can install and update Markdown Lens from there.
+- Declare in the manifest that the extension collects no data (`data_collection_permissions`), as addons.mozilla.org requires for new add-ons.
+- MIT `LICENSE` file.
+
+### Changed
+
+- Firefox and LibreWolf 140 or newer are required (was 128), the first versions that understand the data collection declaration.
+
 ## [0.2.4] - 2026-11-24
 
 ### Added

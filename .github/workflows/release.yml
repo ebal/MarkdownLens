@@ -52,3 +52,49 @@ jobs:
               --notes-file /tmp/notes.md \
               --verify-tag
           fi
+
+  # Submits the version to addons.mozilla.org (listed channel), where Mozilla
+  # reviews and signs it. The first submission creates the listing from
+  # amo-metadata.json. It does not wait for the review (--approval-timeout=0);
+  # Firefox users install and update the add-on from addons.mozilla.org.
+  # Needs the repository secrets AMO_JWT_ISSUER and AMO_JWT_SECRET; without
+  # them the job is skipped. AMO accepts each version only once, so re-running
+  # this job for a version that was already submitted fails.
+  amo:
+    needs: release
+    runs-on: ubuntu-latest
+    container: node:22.11.0-alpine3.20
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+      WEB_EXT_API_KEY: ${{ secrets.AMO_JWT_ISSUER }}
+      WEB_EXT_API_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+    steps:
+      - name: Install build tools
+        if: env.WEB_EXT_API_KEY != ''
+        run: apk add --no-cache bash git zip
+
+      - uses: actions/checkout@v4
+        if: env.WEB_EXT_API_KEY != ''
+        with:
+          ref: refs/tags/${{ env.TAG }}
+
+      - name: Build and unpack the extension
+        if: env.WEB_EXT_API_KEY != ''
+        run: |
+          ./tools/build.sh
+          mkdir -p /tmp/ext
+          unzip -q dist/*.zip -d /tmp/ext
+
+      - name: Lint with Mozilla's add-on linter
+        if: env.WEB_EXT_API_KEY != ''
+        run: npx --yes web-ext@10.8.0 lint --source-dir /tmp/ext
+
+      - name: Submit to addons.mozilla.org
+        if: env.WEB_EXT_API_KEY != ''
+        run: >-
+          npx --yes web-ext@10.8.0 sign
+          --channel=listed
+          --source-dir /tmp/ext
+          --amo-metadata amo-metadata.json
+          --approval-timeout=0
+          --artifacts-dir /tmp/web-ext-artifacts

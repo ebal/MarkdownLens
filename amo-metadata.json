@@ -1,0 +1,12 @@
+{
+  "summary": {
+    "en-US": "Render local and plain-text Markdown files as HTML, fully offline: GitHub Flavored Markdown, KaTeX math, syntax highlighting and Mermaid, flowchart.js and sequence diagrams."
+  },
+  "categories": [
+    "web-development"
+  ],
+  "version": {
+    "license": "MIT",
+    "approval_notes": "No build step: the extension's own code (content.js, content.css, mermaid.html, mermaid-frame.js) is unminified. Everything in vendor/ is an unmodified upstream build: marked 15.0.12 (npm marked/marked.min.js), marked-footnote 1.4.0 (dist/index.umd.js), DOMPurify 3.5.0 (dist/purify.min.js), highlight.js 11.11.1 (common build), KaTeX 0.19.1 (dist/katex.min.js, katex.min.css, fonts/*.woff2), mermaid 12.3.0 (dist/mermaid.esm.min.mjs and dist/chunks/mermaid.esm.min/*), flowchart.js 1.17.1 (release/flowchart.min.js), js-sequence-diagrams 2.0.1 (dist/sequence-diagram-raphael-min.js), Raphael 2.3.0 (raphael.min.js), Underscore 1.13.8 (underscore-umd-min.js). Source: https://github.com/ebal/MarkdownLens. Mermaid runs in mermaid.html (an extension page in a hidden iframe) because it fails inside the Firefox content-script sandbox. The extension makes no network requests and collects no data. Test page: tests/manual-test.md in the repository."
+  }
+}

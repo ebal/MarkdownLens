@@ -36,7 +36,7 @@ https://github.com/user-attachments/assets/96f5944e-14f9-463b-9d3e-32877c473feb
 ### Requirements
 
 - A Chromium-based browser with Manifest V3 support (Brave, Chrome, Chromium, Edge),
-  or Firefox / LibreWolf 128 or newer.
+  or Firefox / LibreWolf 140 or newer.
 
 ### Download
 
@@ -44,7 +44,9 @@ Each [release](https://github.com/ebal/MarkdownLens/releases) has two files:
 
 - `markdown-lens-X.Y.Z.zip` for Chromium browsers: unzip it into a folder and
   load that folder as described below.
-- `markdown-lens-X.Y.Z.xpi` for Firefox and LibreWolf.
+- `markdown-lens-X.Y.Z.xpi` for Firefox and LibreWolf (not signed by Mozilla;
+  see below). Firefox users can install the signed add-on from
+  addons.mozilla.org instead.
 
 You can also clone the repository and load it directly:
 
@@ -63,10 +65,16 @@ git clone https://github.com/ebal/MarkdownLens.git
 Chromium may list `browser_specific_settings` as an unrecognized manifest key.
 That key is for Firefox and the warning is harmless.
 
-### Firefox and LibreWolf (experimental)
+### Firefox and LibreWolf
 
-The `.xpi` is not signed by Mozilla yet, so how you install it depends on the
-browser.
+**From addons.mozilla.org (recommended):** every release is submitted to
+[addons.mozilla.org](https://addons.mozilla.org/firefox/search/?q=Markdown%20Lens),
+where Mozilla reviews and signs it. Install Markdown Lens from there, and
+Firefox keeps it up to date. A new version shows up there only after Mozilla's
+review, which can take from minutes to a few days.
+
+**From the release `.xpi`:** the `.xpi` attached to each Gitea and GitHub
+release is not signed by Mozilla, so how you install it depends on the browser.
 
 **LibreWolf** (and Firefox Developer Edition, Nightly or ESR):
 
@@ -75,7 +83,7 @@ browser.
    and select the `.xpi`.
 
 **Firefox** (release): load it as a temporary add-on, which Firefox removes on
-restart.
+restart, or install it from addons.mozilla.org instead.
 
 1. Open `about:debugging#/runtime/this-firefox`.
 2. Click **Load Temporary Add-on** and select the `.xpi` or `manifest.json`.
@@ -110,9 +118,6 @@ If Firefox offers to download the file instead of showing it, the extension
 never gets a page to render. Open the file from an `http(s)://` server that
 sends it as `text/plain` instead.
 
-To keep the add-on installed in Firefox release, sign it on
-[addons.mozilla.org](https://addons.mozilla.org/developers/) (choose
-*unlisted* for personal use).
 
 ## Usage
 
@@ -227,6 +232,8 @@ icons/               extension icons (icon.svg is the source)
 tools/               release scripts used by the CI workflows
 tests/manual-test.md manual test page covering every feature
 .gitea/, .github/    release workflows for Gitea and GitHub
+amo-metadata.json    addons.mozilla.org listing details and reviewer notes
+LICENSE              MIT license
 ```
 
 ### Bundled libraries
@@ -293,6 +300,14 @@ The packages are written to `dist/`, which git ignores. If the Gitea job fails w
 HTTP 403, add a personal access token with the `write:repository` scope as the
 repository secret `RELEASE_TOKEN`.
 
+On GitHub, a second job (`amo`) lints the extension with Mozilla's `web-ext`
+and submits the version to addons.mozilla.org on the listed channel, using the
+listing details in `amo-metadata.json`. It needs the repository secrets
+`AMO_JWT_ISSUER` and `AMO_JWT_SECRET` (API keys from
+<https://addons.mozilla.org/developers/addon/api/key/>) and is skipped without
+them. It does not wait for Mozilla's review. AMO accepts each version only
+once, so only GitHub submits; Gitea never does.
+
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](LICENSE)
