@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-11-24
+
 ### Added
 
 - Demo video of Markdown Lens in action at the top of the README.
@@ -78,7 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Table of contents sidebar and raw Markdown view, with `t` and `r` shortcuts.
 - Heading anchors and front matter handling.
 
-[unreleased]: https://github.com/ebal/MarkdownLens/compare/v0.2.2...HEAD
+[unreleased]: https://github.com/ebal/MarkdownLens/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/ebal/MarkdownLens/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/ebal/MarkdownLens/releases/tag/v0.2.2
 [0.2.1]: https://github.com/ebal/MarkdownLens/commit/9da120f
 [0.2.0]: https://github.com/ebal/MarkdownLens/commit/6d87df5
