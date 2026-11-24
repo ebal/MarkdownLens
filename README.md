@@ -223,7 +223,12 @@ section as the release notes. To build the packages locally (needs `node` and
 ./tools/build.sh
 ```
 
-They are written to `dist/`, which git ignores. If the Gitea job fails with
+If a tag did not get a GitHub release (for example because the workflow did
+not run), open **Actions → Release → Run workflow** on GitHub and enter the
+tag, such as `v0.2.2`. Running it again for a tag that already has a release
+replaces the attached files.
+
+The packages are written to `dist/`, which git ignores. If the Gitea job fails with
 HTTP 403, add a personal access token with the `write:repository` scope as the
 repository secret `RELEASE_TOKEN`.
 
