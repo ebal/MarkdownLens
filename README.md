@@ -1,5 +1,7 @@
 # Markdown Lens
 
+<img src="icons/MarkdownLens.png" alt="Markdown Lens logo" width="96">
+
 Markdown Lens is a browser extension for Chromium browsers (Brave, Chrome,
 Chromium, Edge) and Firefox / LibreWolf
 ([addons.mozilla.org](https://addons.mozilla.org/firefox/addon/markdown-lens/)). It renders Markdown
@@ -230,7 +232,7 @@ mermaid-frame.js     its script: receives diagram source, returns the SVG
 vendor/              bundled third-party libraries (offline)
 vendor/katex/        KaTeX script, stylesheet and fonts
 vendor/mermaid/      mermaid ES module and its chunks, loaded by mermaid.html
-icons/               extension icons (icon.svg is the source)
+icons/               logo (MarkdownLens.png) and the extension icons made from it
 tools/               release scripts used by the CI workflows
 tests/manual-test.md manual test page covering every feature
 .gitea/, .github/    release workflows for Gitea and GitHub

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- New Markdown Lens logo, used for the extension icons (now also in 32 px) and in the README.
+
 ## [0.2.5] - 2026-11-24
 
 ### Added
