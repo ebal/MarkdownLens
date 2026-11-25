@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- README: link to the Markdown Lens listing on addons.mozilla.org.
+
 ### Changed
 
-- New Markdown Lens logo, used for the extension icons (now also in 32 px) and in the README.
+- New Markdown Lens logo, used for the extension icons (now also in 32 px) and in the README. The logo file itself is not packaged; the extension only ships the icon sizes.
 
 ## [0.2.5] - 2026-11-24
 
